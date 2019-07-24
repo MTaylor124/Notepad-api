@@ -6,7 +6,8 @@ curl "http://localhost:4741/notes" \
     "note": {
       "title": "'"${TITLE}"'",
       "body": "'"${BODY}"'",
-      "priority": "'"${PRIORITY}"'"
+      "priority": "'"${PRIORITY}"'",
+      "user_id": "'"${USER_ID}"'"
     }
   }'
 
