@@ -1,349 +1,73 @@
-Rails[![General Assembly Logo](https://camo.githubusercontent.com/1a91b05b8f4d44b5bbfb83abac2b0996d8e26c92/687474703a2f2f692e696d6775722e636f6d2f6b6538555354712e706e67)](https://generalassemb.ly/education/web-development-immersive)
-
-# rails-api-template
-
-A template for starting projects with `rails-api`. Includes authentication.
-
-At the beginning of each cohort, update the versions in [`Gemfile`](Gemfile).
-
-## Prerequisites
-
--   [rails-api-examples-walkthrough](https://git.generalassemb.ly/ga-wdi-boston/rails-api-examples-walkthrough)
-
-## Dependencies
-
-Install with `bundle install`.
-
--   [`rails-api`](https://github.com/rails-api/rails-api)
--   [`rails`](https://github.com/rails/rails)
--   [`active_model_serializers`](https://github.com/rails-api/active_model_serializers)
--   [`ruby`](https://www.ruby-lang.org/en/)
--   [`postgres`](http://www.postgresql.org)
-
-## Installation
-
-### Download Template:
-1.  [Download](../../archive/master.zip) this template.
-1.  Unzip and rename the template directory (`unzip ~/Downloads/rails-api-template-master.zip`)
-1.  Move into the new project and `git init`.
-
-### Customize Template:
-1.  Empty [`README.md`](README.md) and fill with your own content.
-1.  Rename your app module in `config/application.rb` (change
-    `RailsApiTemplate`).
-1.  Rename your project database in `config/database.yml` (change
-    `'rails-api-template'`).
-
-### Setup Environment:
-1.  Install dependencies with `bundle install`.
-1.  `git add` and `git commit` your changes.
-1.  Create a `.env` for sensitive settings (`touch .env`).
-1.  Generate new `development` and `test` secrets (`bundle exec rails secret`).
-1.  Store them in `.env` with keys `SECRET_KEY_BASE_<DEVELOPMENT|TEST>`
-    respectively.
-1.  In order to make requests to your deployed API, you will need to set
-    `SECRET_KEY_BASE` in the environment of the production API (for example, using `heroku config:set` or the Heroku dashboard).
-1.  In order to make requests from your deployed client application, you will
-    need to set `CLIENT_ORIGIN` in the environment of the production API (for example, `heroku config:set CLIENT_ORIGIN=https://<github-username>.github.io`).
-    See more about deploying to heroku [rails-heroku-setup-guide](https://git.generalassemb.ly/ga-wdi-boston/rails-heroku-setup-guide)
-
-### Setup your database:
-    - bin/rails db:drop (if it already exists)
-    - bin/rails db:create
-    - bin/rails db:migrate
-    - bin/rails db:seed
-    - bin/rails db:examples
-
-  Note: Remember to follow the same commands when setting up your deployed database!
-
-### Run your server!
-1. Run the API server with `bin/rails server` or `bundle exec rails server`.
-
-## Structure
-
-This template follows the standard project structure in Rails.
-
-`curl` command scripts are stored in [`curl-scripts`](curl-scripts) with names that
-correspond to API actions.
-
-User authentication is built-in.
-
-## Tasks
-
-Developers should run these often!
-
--   `bin/rails routes` lists the endpoints available in your API.
--   `bin/rspec spec` runs automated tests.
--   `bin/rails console` opens a REPL that pre-loads the API.
--   `bin/rails db` opens your database client and loads the correct database.
--   `bin/rails server` starts the API.
--   `curl-scripts/*.sh` run various `curl` commands to test the API. See below.
-
-## API
-
-Use this as the basis for your own API documentation. Add a new third-level
-heading for your custom entities, and follow the pattern provided for the
-built-in user authentication documentation.
-
-Scripts are included in [`curl-scripts`](curl-scripts) to test built-in actions. Add your
-own scripts to test your custom API. As an alternative, you can write automated
-tests in RSpec to test your API.
-
-### Authentication
-
-| Verb   | URI Pattern            | Controller#Action |
-|--------|------------------------|-------------------|
-| POST   | `/sign-up`             | `users#signup`    |
-| POST   | `/sign-in`             | `users#signin`    |
-| PATCH  | `/change-password`     | `users#changepw`  |
-| DELETE | `/sign-out`        | `users#signout`   |
-
-#### POST /sign-up
-
-Request:
-
-```sh
-curl http://localhost:4741/sign-up \
-  --include \
-  --request POST \
-  --header "Content-Type: application/json" \
-  --data '{
-    "credentials": {
-      "email": "'"${EMAIL}"'",
-      "password": "'"${PASSWORD}"'",
-      "password_confirmation": "'"${PASSWORD}"'"
-    }
-  }'
-```
-
-```sh
-EMAIL=ava@bob.com PASSWORD=hannah curl-scripts/auth/sign-up.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 201 Created
-Content-Type: application/json; charset=utf-8
-
-{
-  "user": {
-    "id": 1,
-    "email": "ava@bob.com"
-  }
-}
-```
-
-#### POST /sign-in
-
-Request:
-
-```sh
-curl http://localhost:4741/sign-in \
-  --include \
-  --request POST \
-  --header "Content-Type: application/json" \
-  --data '{
-    "credentials": {
-      "email": "'"${EMAIL}"'",
-      "password": "'"${PASSWORD}"'"
-    }
-  }'
-```
-
-```sh
-EMAIL=ava@bob.com PASSWORD=hannah curl-scripts/auth/sign-in.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{
-  "user": {
-    "id": 1,
-    "email": "ava@bob.com",
-    "token": "BAhJIiVlZDIwZTMzMzQzODg5NTBmYjZlNjRlZDZlNzYxYzU2ZAY6BkVG--7e7f77f974edcf5e4887b56918f34cd9fe293b9f"
-  }
-}
-```
-
-#### PATCH /change-password
-
-Request:
-
-```sh
-curl --include --request PATCH "http://localhost:4741/change-password" \
-  --header "Authorization: Token token=$TOKEN" \
-  --header "Content-Type: application/json" \
-  --data '{
-    "passwords": {
-      "old": "'"${OLDPW}"'",
-      "new": "'"${NEWPW}"'"
-    }
-  }'
-```
-
-```sh
-OLDPW='hannah' NEWPW='elle' TOKEN='BAhJIiVlZDIwZTMzMzQzODg5NTBmYjZlNjRlZDZlNzYxYzU2ZAY6BkVG--7e7f77f974edcf5e4887b56918f34cd9fe293b9f' sh curl-scripts/auth/change-password.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 204 No Content
-```
-
-#### DELETE /sign-out
-
-Request:
-
-```sh
-curl http://localhost:4741/sign-out \
-  --include \
-  --request DELETE \
-  --header "Authorization: Token token=$TOKEN"
-```
-
-```sh
-TOKEN='BAhJIiVlZDIwZTMzMzQzODg5NTBmYjZlNjRlZDZlNzYxYzU2ZAY6BkVG--7e7f77f974edcf5e4887b56918f34cd9fe293b9f' sh curl-scripts/auth/sign-out.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 204 No Content
-```
-
-### Users
-
-| Verb | URI Pattern | Controller#Action |
-|------|-------------|-------------------|
-| GET  | `/users`    | `users#index`     |
-| GET  | `/users/1`  | `users#show`      |
-| PATCH| `/users/1`  | `users#update`    |
-
-#### GET /users
-
-Request:
-
-```sh
-curl http://localhost:4741/users \
-  --include \
-  --request GET \
-  --header "Authorization: Token token=$TOKEN"
-```
-
-```sh
-TOKEN=BAhJIiVlZDIwZTMzMzQzODg5NTBmYjZlNjRlZDZlNzYxYzU2ZAY6BkVG--7e7f77f974edcf5e4887b56918f34cd9fe293b9f curl-scripts/users.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{
-  "users": [
-    {
-      "id": 2,
-      "email": "bob@ava.com"
-    },
-    {
-      "id": 1,
-      "email": "ava@bob.com"
-    }
-  ]
-}
-```
-
-#### GET /users/:id
-
-Request:
-
-```sh
-curl --include --request GET http://localhost:4741/users/$ID \
-  --header "Authorization: Token token=$TOKEN"
-```
-
-```sh
-ID=2 TOKEN=BAhJIiVlZDIwZTMzMzQzODg5NTBmYjZlNjRlZDZlNzYxYzU2ZAY6BkVG--7e7f77f974edcf5e4887b56918f34cd9fe293b9f curl-scripts/user.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{
-  "user": {
-    "id": 2,
-    "email": "bob@ava.com"
-  }
-}
-```
-
-#### PATCH /users/:id
-
-Request:
-
-```sh
-curl "http://localhost:4741/users/${ID}" \
-  --include \
-  --request PATCH \
-  --header "Authorization: Token token=${TOKEN}" \
-  --header "Content-Type: application/json" \
-  --data '{
-    "user": {
-      "email": "'"${EMAIL}"'"
-    }
-  }'
-```
-
-```sh
-ID=1 TOKEN="BAhJIiU1NGNlYjRmMjBhM2NkZTZiNzk1MGNiYmZiYWMyY2U4MwY6BkVG--ddb1e16af0e05921aa56d771e4a2f816f2a1d46e"
-EMAIL=mike@m
-sh curl-scripts/users/user-update.sh
-```
-
-Response:
-
-```md
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-
-{"user":{"id":1,"email":"mike@m"}}
-```
-
-### Reset Database without dropping
-
-This is not a task developers should run often, but it is sometimes necessary.
-
-**locally**
-
-```sh
-bin/rails db:migrate VERSION=0
-bin/rails db:migrate db:seed db:examples
-```
-
-**heroku**
-
-```sh
-heroku run rails db:migrate VERSION=0
-heroku run rails db:migrate db:seed db:examples
-```
-
-## Additional Resources
-- [rails-heroku-setup-guide](https://git.generalassemb.ly/ga-wdi-boston/rails-heroku-setup-guide)
-- http://guides.rubyonrails.org/api_app.html
-- https://blog.codeship.com/building-a-json-api-with-rails-5/
-
-## [License](LICENSE)
-
-1.  All content is licensed under a CC­BY­NC­SA 4.0 license.
-1.  All software code is licensed under GNU GPLv3. For commercial use or
-    alternative licensing, please contact legal@ga.co.
+## Introduction
+
+Nugpad by Matt Taylor
+
+The goal of this full-stack SPA is to utilize front end design including
+Javascript functionality along with back-end ruby-on rails API.
+The goal of Nugpad is to provide a place to create, view, update and
+delete notes on one single browser application. Many notepad applications
+are operating system dependant and cannot transfer between different
+media devices. Having notes stored on an online application provides the
+versitility and convenience of being able to access personal notes at
+any time on any device that has access to the internet.
+
+Nugpad will also serve as an ongoing experiment that I will use to
+practice different UX changes to make more attractive and user-friendly
+applications. I might add other back-end functionality to Nugpad to expand
+its capacity later.
+
+Front end respository:
+(https://github.com/MTaylor124/notepad-client)
+
+## development Process
+
+The goal of the back-end for Nugpad is to simply link users to their own notes
+as described by this ERD (https://imgur.com/a/JqQsiOf).
+
+Standard heroku setup with github repositories set up for both front end
+and back end. User table came with rails that needed to be joined to a new
+database for notes. Notes table was scaffolded and both tables joined together
+in standard belongs_to and has_many relationship. Notes are given title,
+priority, body and user_id attributes. User_id was later abandoned in
+preference to using the id given to the note to allow access to current_user's
+notes.
+
+Create note would generate each note with its own specific id which would be
+used as the selector for update-note and delete-note.
+
+For the update note functions I wanted the fields to be optional ex. if a
+user wants to update the title of a note within update-note they could do so
+with the note's number and new title instead of having to re-input the
+note body and the note priority.
+
+Nugpad back-end was built with:
+  - ruby on rails
+  - SQL databases
+
+## Problem Solving Strategy
+
+Most of the problems encountered during the production of Nugpad were related
+to heroku and the ability to deploy the SPA as a whole. The terminal command
+heroku log --tails helped with being able to effectively diagnose issues
+regarding the communication of information between the front end and the
+back end databases.
+
+## Planned additions for the future
+
+At the moment I have no specific plans for the future of the back-end of
+Nugpad but if possible I might add functionality that the high priority Notes
+show up first when all user notes are listed and change the priority system
+to a toggle system where the only two options are normal and high.
+
+## Wireframes and User stories
+
+-as a user I want to be able to create my own Notes
+-as a user I want other people to not be able to see my notes
+-as a user I want to be able to view my created notes
+-as a user I want to be able to update/delete my notes
+-as a user I want to be able to update a note title without having to re-enter
+  the body or priority
+-as a user I want to be able to have as many notes as I want
+
+ERD for users and notes
+(https://imgur.com/a/JqQsiOf)
