@@ -24,9 +24,9 @@ ActiveRecord::Schema.define(version: 2019_07_23_145008) do
   end
 
   create_table "notes", force: :cascade do |t|
-    t.string "title"
-    t.string "body"
-    t.string "priority"
+    t.string "title", null: false
+    t.string "body", null: false
+    t.string "priority", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"

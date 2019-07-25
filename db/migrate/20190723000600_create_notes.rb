@@ -1,9 +1,9 @@
 class CreateNotes < ActiveRecord::Migration[5.2]
   def change
     create_table :notes do |t|
-      t.string :title
-      t.string :body
-      t.string :priority
+      t.string :title, null: false
+      t.string :body, null: false
+      t.string :priority, null: false
 
       t.timestamps
     end
