@@ -42,7 +42,7 @@ note body and the note priority.
 
 Nugpad back-end was built with:
   - ruby on rails
-  - SQL databases
+  - Postgresql databases
 
 ## Problem Solving Strategy
 
